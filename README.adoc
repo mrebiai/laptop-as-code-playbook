@@ -1,0 +1,32 @@
+= laptop-as-code-playbook
+:toc: left
+:icons: font
+
+== Pre-requisites
+* `python3`
+* `curl` (`sudo apt -y install curl`)
+
+== Run Bootstrap
+For the first installation only.
+
+[source, bash]
+----
+curl -ks https://mrebiai.github.io/laptop-as-code-env/ansible/bootstrap.sh | bash
+----
+
+NOTE: 1st run for SSH key generation, 2nd run for Ansible installation.
+
+== Refresh your Ansible User Role (with deps)
+[source, bash]
+----
+ansible-galaxy install git+git@github.com:mrebiai/laptop-as-code-role-user.git,<your-login> --force-with-deps
+----
+
+== Run Playbook
+[source, bash]
+----
+ansible-pull -U github.com:mrebiai/laptop-as-code-playbook.git -K
+----
+
+NOTE: alias for Refresh Ansible User Role & Playbook => `os_upd`
+

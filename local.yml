@@ -1,0 +1,56 @@
+---
+- hosts: all
+  tags: always
+  connection: local
+  tasks:
+    - name: Local - Your parameters
+      debug:
+        msg:
+          - "linux_distribution/version={{ ansible_distribution }}/{{ ansible_distribution_version }}"
+          - "ansible_run_tags={{ ansible_run_tags }}"
+          - "my_linux_login={{ ansible_env.USER }}"
+          - "my_login={{ my_login }}"
+          - "my_last_lame={{ my_last_name }}"
+          - "my_first_name={{ my_first_name }}"
+          - "my_email={{ my_email }}"
+          - "my_github_repos_dir={{ my_github_repos_dir }}"
+          - "my_role_version={{ my_role_version }}"
+          - "intellij_idea_ultimate_license={{ intellij_idea_ultimate_license }}"
+
+# tasks to complete before running roles
+- hosts: all
+  tags: always
+  connection: local
+  become: true
+  pre_tasks:
+    - name: Local - Apt update & upgrade
+      apt: update_cache=yes upgrade=yes
+      changed_when: False
+    - name: Snap - Refresh
+      ansible.builtin.shell: |
+        snap refresh
+      changed_when: False
+      args:
+        executable: /bin/bash
+
+# run roles
+- hosts: all
+  connection: local
+  roles:
+    - laptop-as-code-role-user
+
+# end of run cleanup and reporting
+- hosts: all
+  tags: always
+  connection: local
+  become: true
+  tasks:
+    - name: Local - Apt cleanup package cache
+      apt:
+        autoclean: yes
+      changed_when: false
+
+    - name: autoremove orphan packages
+      apt:
+        autoremove: yes
+        purge: yes
